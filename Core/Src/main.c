@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "i2c.h"
 #include "usart.h"
 #include "usb_otg.h"
@@ -39,6 +40,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define SENSOR_I2C hi2c1
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,8 +51,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-char message[35];
-char* formatWeather = "T: %d  P: %d";
+char messageSensor[35];
+char* formatSensor = "T: %d  P: %d";
+
+char messageUart[35];
+char* formatUart = "tim: %d, T: %d, P: %d\n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -72,7 +77,6 @@ void callbackSSD1306(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,8 +99,9 @@ int main(void)
   MX_GPIO_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_HS_USB_Init();
-  MX_I2C1_Init();
+  MX_DMA_Init();
   MX_I2C2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   //sensor
@@ -111,6 +116,7 @@ int main(void)
   TimerId timerIdSSD1306;
   timerIdSSD1306 = softTimerRegisterCallback(callbackSSD1306, 500);
   softTimerChangeState(timerIdSSD1306, timerRUN);
+
 
   /* USER CODE END 2 */
 
@@ -187,7 +193,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-//periodically read data from MS5611
+//periodically read data from MS5611 and transmit them
 void callbackMS5611(void)
 {
 	MS5611_RequestTemperature(&SENSOR_I2C, OSR_4096);
@@ -197,14 +203,18 @@ void callbackMS5611(void)
 	MS5611_RequestPressure(&SENSOR_I2C, OSR_4096);
 	MS5611_ReadPressure(&SENSOR_I2C, &MS5611);
 	MS5611_CalculatePressure(&MS5611);
+	
+	sprintf(messageUart, formatUart, HAL_GetTick(), MS5611.DigitalTemperature_D2, MS5611.DigitalPressure_D1);
+	HAL_UART_Transmit_DMA(&huart3, messageUart, strlen(messageUart));
 }
 
+//periodically display data on OLED
 void callbackSSD1306(void)
 {
 	ssd1306_Fill(Black);
-	sprintf(message, formatWeather, MS5611.DigitalTemperature_D2, MS5611.DigitalPressure_D1);
+	sprintf(messageSensor, formatSensor, MS5611.DigitalTemperature_D2, MS5611.DigitalPressure_D1);
 	ssd1306_SetCursor(0, 0);
-	ssd1306_WriteString(message, Font_7x10, White);
+	ssd1306_WriteString(messageSensor, Font_7x10, White);
 	ssd1306_UpdateScreen();
 }
 
