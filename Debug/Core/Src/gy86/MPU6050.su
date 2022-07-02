@@ -1,0 +1,10 @@
+../Core/Src/gy86/MPU6050.c:10:9:MPU6050_Init	32	static
+../Core/Src/gy86/MPU6050.c:81:6:MPU6050_Bypass	32	static
+../Core/Src/gy86/MPU6050.c:92:6:MPU6050_Master	32	static
+../Core/Src/gy86/MPU6050.c:111:6:HMC5883L_Setup	32	static
+../Core/Src/gy86/MPU6050.c:126:6:MPU6050_Slave_Read	32	static
+../Core/Src/gy86/MPU6050.c:141:9:MPU6050_DataReady	32	static
+../Core/Src/gy86/MPU6050.c:147:6:MPU6050_Read_All	32	static
+../Core/Src/gy86/MPU6050.c:152:6:MPU6050_Read_All_DMA	24	static
+../Core/Src/gy86/MPU6050.c:157:6:MPU6050_Parsing	16	static
+../Core/Src/gy86/MPU6050.c:188:6:MPU6050_Parsing_NoOffest	16	static

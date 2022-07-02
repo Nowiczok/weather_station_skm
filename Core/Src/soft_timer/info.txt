@@ -1,0 +1,11 @@
+Biblioteka realizująca funkcjonalność softwerowych timerów.
+Możliwość dodania jednorazowego lub cyklicznego wywołania funkcji
+
+Dodac funkcje softTimerTick() do sysTick (1ms)
+Dodac funkcje softTimerEvent() do petli glownej
+
+Przykład użycia   
+
+TimerId timerIdBlinkLed;
+timerIdBlinkLed = softTimerRegisterCallback(&blinkLed, 300);
+  softTimerChangeState(timerIdBlinkLed, timerRUN);
