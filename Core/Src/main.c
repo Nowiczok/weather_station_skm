@@ -29,6 +29,9 @@
 
 #include "gy86/MS5611.h"
 #include "soft_timer/soft_timer.h"
+#include "SSD1306/ssd1306.h"
+#include <stdio.h>
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -51,11 +54,11 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-char messageSensor[35];
-char* formatSensor = "T: %d  P: %d";
+char messageSensor[40];
+char* formatSensor = "T:%d *C P:%d hPa";
 
-char messageUart[35];
-char* formatUart = "tim: %d, T: %d, P: %d\n";
+char messageUart[40];
+char* formatUart = "tim: %d, T: %d, P: %d \r\n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,6 +66,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void callbackMS5611(void);
 void callbackSSD1306(void);
+void callbackUart(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -92,14 +96,13 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  MX_DMA_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_HS_USB_Init();
-  MX_DMA_Init();
   MX_I2C2_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
@@ -117,6 +120,10 @@ int main(void)
   timerIdSSD1306 = softTimerRegisterCallback(callbackSSD1306, 500);
   softTimerChangeState(timerIdSSD1306, timerRUN);
 
+  //uart
+  TimerId timerIdUART;
+  timerIdUART = softTimerRegisterCallback(callbackUart, 1000);
+  softTimerChangeState(timerIdUART, timerRUN);
 
   /* USER CODE END 2 */
 
@@ -197,22 +204,28 @@ void SystemClock_Config(void)
 void callbackMS5611(void)
 {
 	MS5611_RequestTemperature(&SENSOR_I2C, OSR_4096);
+	HAL_Delay(10);
 	MS5611_ReadTemperature(&SENSOR_I2C, &MS5611);
 	MS5611_CalculateTemperature(&MS5611);
 
 	MS5611_RequestPressure(&SENSOR_I2C, OSR_4096);
+	HAL_Delay(10);
 	MS5611_ReadPressure(&SENSOR_I2C, &MS5611);
 	MS5611_CalculatePressure(&MS5611);
 	
-	sprintf(messageUart, formatUart, HAL_GetTick(), MS5611.DigitalTemperature_D2, MS5611.DigitalPressure_D1);
-	HAL_UART_Transmit_DMA(&huart3, messageUart, strlen(messageUart));
+}
+
+void callbackUart(void)
+{
+	sprintf(messageUart, formatUart, HAL_GetTick(), MS5611.TEMP, MS5611.P);
+	HAL_UART_Transmit(&huart3, (uint8_t*)messageUart, strlen(messageUart), HAL_MAX_DELAY);
 }
 
 //periodically display data on OLED
 void callbackSSD1306(void)
 {
 	ssd1306_Fill(Black);
-	sprintf(messageSensor, formatSensor, MS5611.DigitalTemperature_D2, MS5611.DigitalPressure_D1);
+	sprintf(messageSensor, formatSensor, MS5611.TEMP/100, MS5611.P/100);
 	ssd1306_SetCursor(0, 0);
 	ssd1306_WriteString(messageSensor, Font_7x10, White);
 	ssd1306_UpdateScreen();

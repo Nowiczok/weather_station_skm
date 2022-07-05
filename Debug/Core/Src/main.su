@@ -1,4 +1,6 @@
-../Core/Src/main.c:71:5:main	16	static
-../Core/Src/main.c:125:6:SystemClock_Config	120	static
-../Core/Src/main.c:183:6:callbackMS5611	8	static
-../Core/Src/main.c:200:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:81:5:main	16	static
+../Core/Src/main.c:146:6:SystemClock_Config	120	static
+../Core/Src/main.c:204:6:callbackMS5611	8	static
+../Core/Src/main.c:218:6:callbackUart	24	static
+../Core/Src/main.c:225:6:callbackSSD1306	8	static
+../Core/Src/main.c:240:6:Error_Handler	4	static,ignoring_inline_asm
