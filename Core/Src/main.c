@@ -218,8 +218,10 @@ void callbackMS5611(void)
 void callbackUart(void)
 {
 	sprintf(messageUart, formatUart, HAL_GetTick(), MS5611.TEMP, MS5611.P);
+	//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)messageUart, strlen(messageUart));
 	HAL_UART_Transmit(&huart3, (uint8_t*)messageUart, strlen(messageUart), HAL_MAX_DELAY);
 }
+
 
 //periodically display data on OLED
 void callbackSSD1306(void)

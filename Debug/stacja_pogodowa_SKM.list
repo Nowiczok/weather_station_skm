@@ -23,23 +23,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
   9 .ARM.attributes 0000002e  00000000  00000000  00020084  2**0
                   CONTENTS, READONLY
- 10 .debug_info   00017a9b  00000000  00000000  000200b2  2**0
+ 10 .debug_info   00017aef  00000000  00000000  000200b2  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 11 .debug_abbrev 00003247  00000000  00000000  00037b4d  2**0
+ 11 .debug_abbrev 00003258  00000000  00000000  00037ba1  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 12 .debug_aranges 00001038  00000000  00000000  0003ad98  2**3
+ 12 .debug_aranges 00001040  00000000  00000000  0003ae00  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_ranges 00000ec8  00000000  00000000  0003bdd0  2**3
+ 13 .debug_ranges 00000ed0  00000000  00000000  0003be40  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_macro  00030eaf  00000000  00000000  0003cc98  2**0
+ 14 .debug_macro  00030eaf  00000000  00000000  0003cd10  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_line   000193fb  00000000  00000000  0006db47  2**0
+ 15 .debug_line   00019416  00000000  00000000  0006dbbf  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_str    00135c68  00000000  00000000  00086f42  2**0
+ 16 .debug_str    00135c6d  00000000  00000000  00086fd5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .comment      00000050  00000000  00000000  001bcbaa  2**0
+ 17 .comment      00000050  00000000  00000000  001bcc42  2**0
                   CONTENTS, READONLY
- 18 .debug_frame  000045fc  00000000  00000000  001bcbfc  2**2
+ 18 .debug_frame  00004620  00000000  00000000  001bcc94  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2638,6 +2638,7 @@ void callbackUart(void)
  80015d6:	4621      	mov	r1, r4
  80015d8:	480a      	ldr	r0, [pc, #40]	; (8001604 <callbackUart+0x4c>)
  80015da:	f007 fc03 	bl	8008de4 <siprintf>
+	//HAL_UART_Transmit_DMA(&huart3, (uint8_t*)messageUart, strlen(messageUart));
 	HAL_UART_Transmit(&huart3, (uint8_t*)messageUart, strlen(messageUart), HAL_MAX_DELAY);
  80015de:	4809      	ldr	r0, [pc, #36]	; (8001604 <callbackUart+0x4c>)
  80015e0:	f7fe fe86 	bl	80002f0 <strlen>
@@ -2658,6 +2659,8 @@ void callbackUart(void)
  8001608:	24000410 	.word	0x24000410
 
 0800160c <callbackSSD1306>:
+	HAL_UART_DMAPause(huart);
+}
 
 //periodically display data on OLED
 void callbackSSD1306(void)
